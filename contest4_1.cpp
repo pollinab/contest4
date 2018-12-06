@@ -3,16 +3,16 @@
 
 long long HashFunction(std::string str, long long tableSize);
 
-struct HashTable
+struct HashTable //хеш-таблица
 {
     std::vector <std::pair<int, std::string>> table;
     long long number;
     HashTable()
     {
-        table.assign(8, std::make_pair(-1, ""));
+        table.assign(8, std::make_pair(-1, "")); //начальный размер таблицы 8, все элементы помечены -1
         number = 0;
     }
-    void NewHash()
+    void NewHash() //перехеширование
     {
         std::vector <std::pair<int, std::string>> prev;
         prev = table;
@@ -23,37 +23,37 @@ struct HashTable
                 Insert(prev[i].second);
         }
     }
-    void Insert(std::string str)
+    void Insert(std::string str) //добавление строки
     {
         if ((number + 1) * 4 >= table.size() * 3)
-            NewHash();
+            NewHash();                             //если нужно, выполняем перехеширование
         long long Hash = HashFunction(str, table.size());
         long long index = Hash;
-        for (int j = 1; table[index].first == 1; ++j)
+        for (int j = 1; table[index].first == 1; ++j) //элемент помечен 1, если он был добавлен и не удален
         {
-            index = (index + j) % table.size();
+            index = (index + j) % table.size(); //квадратичное пробирование
         }
-        table[index].first = 1;
+        table[index].first = 1; 
         table[index].second = str;
         ++number;
     }
-    bool Find(std::string str)
+    bool Find(std::string str) //поиск строки
     {
         long long Hash = HashFunction(str, table.size());
         long long index = Hash;
-        for (long long j = 1; table[index].first != -1; ++j)
+        for (long long j = 1; table[index].first != -1; ++j) //элемент помечен -1, если он не был добавлен
         {
             if (table[index].first == 1 && table[index].second == str)
             {
                 return true;
             }
             index = (index + j) % table.size();
-            if (index == Hash)
+            if (index == Hash) //если обошли всю таблицу, возвращаем false
                 return false;
         }
         return false;
     }
-    bool Delete(std::string str)
+    bool Delete(std::string str) //удаление строки, возвращает false, если строка не найдена
     {
         int Hash = HashFunction(str, table.size());
         int index = Hash;
@@ -61,7 +61,7 @@ struct HashTable
         {
             if (table[index].first == 1 && table[index].second == str)
             {
-                table[index].first = -2;
+                table[index].first = -2; //помечаем -2 удаленные элементы
                 --number;
                 return true;
             }
@@ -73,7 +73,7 @@ struct HashTable
     }
 };
 
-long long HashFunction(std::string str, long long tableSize)
+long long HashFunction(std::string str, long long tableSize) //хеш-функция методом Горнера
 {
     const int a = 179;
     long long Hash = 0;
@@ -91,7 +91,7 @@ int main()
     {
         if (c == '+')
         {
-            if (table.Find(s))
+            if (table.Find(s)) //проверяем, чтобы не возникло повторений
                 std::cout << "FAIL" << std::endl;
             else
             {
